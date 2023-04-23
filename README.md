@@ -1,0 +1,1 @@
+# API Driven Stock Analysis, Compatible with webservers and AWS Lambda 
