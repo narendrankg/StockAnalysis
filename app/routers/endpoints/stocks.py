@@ -47,13 +47,16 @@ async def root(year, col, token: Annotated[str, Depends(oauth2_scheme)]):
         # filter Column and Year related data in seperate data frame
         df_year_col = df.loc[df.index.year == year_to_check, ["Index", column_to_check]]
         # calculate the mean for the selected column
-        best_stock_mean = df_year_col[column_to_check].mean()
+        df_year_col_mean = df_year_col[column_to_check].mean()
+
+        agg_functions = {column_to_check: ['max', 'min']}
+        df_summary = df_year_col.groupby('Index').agg(agg_functions)
         # Find the stock with the highest max value for the specified column and year
-        best_stock_max = df_year_col.loc[df_year_col[column_to_check].idxmax(), 'Index']
+        max_open_stock = df_summary.loc[df_summary['Open', 'max'].idxmax()]
         # Find the stock with the highest min value for the specified column and year
-        best_stock_min = df_year_col.loc[df_year_col[column_to_check].idxmin(), 'Index']
-        return {"min_price_stock": best_stock_max,
-                "max_price_stock": best_stock_min,
-                "average_price_of_the_year": best_stock_mean}
+        min_open_stock = df_summary.loc[df_summary['Open', 'min'].idxmin()]
+        return {"min_price_stock": min_open_stock.name,
+                "max_price_stock": max_open_stock.name,
+                "average_price_of_the_year": df_year_col_mean}
         ###############end################
     return get_response_data
