@@ -30,7 +30,7 @@ async def root(year, col, token: Annotated[str, Depends(oauth2_scheme)]):
         # get_response_data = json.loads(get_response.text)
         # return get_response_data
         # Forcefully raising exception here as i was facing issue working with pandas on aws lambda. else will return successful response from here.
-        raise Exception
+        raise Exception("Forcefully raised Error")
     except Exception as e:
         print("Exception occured" + str(e))
 
@@ -47,9 +47,7 @@ async def root(year, col, token: Annotated[str, Depends(oauth2_scheme)]):
         # filter Column and Year related data in seperate data frame
         df_year_col = df.loc[df.index.year == year_to_check, ["Index", column_to_check]]
         # calculate the mean for the selected column
-        df_year_col_mean = df_year_col.mean()
-        # Find the highest average price for the specified column and year
-        best_stock_mean = df_year_col_mean[column_to_check]
+        best_stock_mean = df_year_col[column_to_check].mean()
         # Find the stock with the highest max value for the specified column and year
         best_stock_max = df_year_col.loc[df_year_col[column_to_check].idxmax(), 'Index']
         # Find the stock with the highest min value for the specified column and year
